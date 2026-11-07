@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شات المجتمعات - Social Space</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="authView" class="view active">
+        <div class="auth-card">
+            <div class="logo">💬</div>
+            <h2>تطبيق التواصل المتكامل</h2>
+            <p>سجل دخولك أو أنشئ حسابك لبدء المحادثة</p>
+            <div class="tab-buttons">
+                <button id="tabLoginBtn" class="tab-btn active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+                <button id="tabRegBtn" class="tab-btn" onclick="switchAuthTab('register')">حساب جديد</button>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUser" placeholder="اسم المستخدم" required>
+                <input type="password" id="loginPass" placeholder="كلمة المرور" required>
+                <button type="submit" class="btn-primary">دخول</button>
+            </form>
+            <form id="regForm" onsubmit="handleRegister(event)" class="hidden">
+                <input type="text" id="regUser" placeholder="اسم المستخدم" required>
+                <input type="password" id="regPass" placeholder="كلمة المرور" required>
+                <input type="text" id="regBio" placeholder="نبذة تعريفية (Bio)">
+                <label class="file-label">
+                    📷 اختر صورة شخصية من الجهاز
+                    <input type="file" id="regAvatarFile" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
+                </label>
+                <img id="avatarPreview" class="avatar-preview hidden" src="" alt="معاينة">
+                <button type="submit" class="btn-primary">إنشاء الحساب</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="appView" class="view">
+        <header class="top-nav">
+            <div class="app-title">المجتمع 🌐</div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="بحث عن غرفة..." oninput="filterContent()">
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section id="homeScreen" class="screen active">
+                <div class="chat-container">
+                    <aside class="rooms-sidebar">
+                        <div class="sidebar-header"><span>غرف الدردشة</span></div>
+                        <div id="roomsList" class="rooms-list"></div>
+                    </aside>
+                    <section class="chat-area">
+                        <div id="chatHeader" class="chat-header">
+                            <span id="activeRoomName">اختر غرفة للبدء</span>
+                        </div>
+                        <div id="messagesBox" class="messages-box">
+                            <div class="empty-state">اختر غرفة للدردشة والمشاركة</div>
+                        </div>
+                        <form id="msgForm" class="msg-form" onsubmit="sendMessage(event)">
+                            <label class="attach-btn">
+                                🖼️
+                                <input type="file" id="msgImageFile" accept="image/*" style="display:none;" onchange="sendImageMsg(this)">
+                            </label>
+                            <input type="text" id="msgInput" placeholder="اكتب رسالتك..." autocomplete="off">
+                            <button type="submit" class="btn-send">إرسال</button>
+                        </form>
+                    </section>
+                </div>
+            </section>
+
+            <section id="profileScreen" class="screen">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar">
+                        <h2 id="profileUsername">اسم المستخدم</h2>
+                        <p id="profileBio" class="bio-text">النبذة التعريفية...</p>
+                    </div>
+                    <hr class="divider">
+                    <h3>تعديل الملف الشخصي</h3>
+                    <form onsubmit="handleUpdateProfile(event)" class="profile-form">
+                        <label>النبذة التعريفية الجديدة:</label>
+                        <input type="text" id="updateBioInput" placeholder="اكتب نبذة جديدة...">
+                        <label class="file-label">
+                            📸 تغيير الصورة الشخصية
+                            <input type="file" id="updateAvatarFile" accept="image/*" style="display:none;">
+                        </label>
+                        <button type="submit" class="btn-primary">حفظ التغييرات</button>
+                    </form>
+                    <button onclick="logout()" class="btn-danger">تسجيل الخروج</button>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <button id="navHome" class="nav-item active" onclick="switchScreen('homeScreen')">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">الرئيسية والغرف</span>
+            </button>
+            <button id="navProfile" class="nav-item" onclick="switchScreen('profileScreen')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">الملف الشخصي</span>
+            </button>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
